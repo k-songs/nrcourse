@@ -1,42 +1,53 @@
 import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
-import { StyleSheet, ImageBackground,SafeAreaView } from "react-native";
+import { StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import {useState} from 'react'
+import { useState } from "react";
 import Colors from "./constants/color";
 import GameOverScreen from "./screens/GameOverScreen";
 
 export default function App() {
+  const [userNumber, setUserNumber] = useState();
+  const [gameIsOver, setGameIsOver] = useState(false);
+  const [gameRounds, setGameRounds] = useState(0);
+  
+  
+  function pickNumberHandler(pickedNumber) {
+    setUserNumber(pickedNumber);
+  }
+  function gameOverHandler({roundsNumber}) {
+    setGameIsOver(true);
+    setGameRounds(roundsNumber);
+  }
 
-  const [userNumber,setUserNumber] =useState()
-  const [gameIsOver,setGameIsOver] =useState(true)
-function pickNumberHandler (pickedNumber){
-  setUserNumber(pickedNumber)
-}
-function gameOverHandler(){
-  setGameIsOver(true)
-}
-let screen = <StartGameScreen onPickNumber={pickNumberHandler}/>
-if(userNumber){
-  screen= <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
-}
+  function startNewGameHandler() {
+    setUserNumber(null);
+    setGameIsOver(false);
+    setGameRounds(0);
+  }
+  let screen = <StartGameScreen onPickNumber={pickNumberHandler} />;
+  if (userNumber) {
+    screen = (
+      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
+    );
+  }
 
-if(gameIsOver){
-  screen= <GameOverScreen/>
-}
+  if (gameIsOver && userNumber) {
+    screen = <GameOverScreen roundsNumber={gameRounds} userNumber={userNumber} onStartNewGame={startNewGameHandler} />;
+  }
 
   return (
-    <LinearGradient colors={[Colors.primary700,  Colors.accent500]} style={styles.rootScreen}>
+    <LinearGradient
+      colors={[Colors.primary700, Colors.accent500]}
+      style={styles.rootScreen}
+    >
       <ImageBackground
         source={require("./assets/images/brSound.jpg")}
         resizeMode="cover"
         style={styles.rootScreen}
         imageStyle={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.rootScreen}>
-        {screen}
-        </SafeAreaView>
- 
+        <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
       </ImageBackground>
     </LinearGradient>
   );
